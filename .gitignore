@@ -1,0 +1,6 @@
+# node_modules
+node_modules/
+DB.sql
+requerimientos.txt
+.env
+.vscode/
