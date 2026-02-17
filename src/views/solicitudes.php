@@ -23,14 +23,74 @@
 
         <?php
         include "./src/models/solicitud.model.php";
-        $requests = obtenerSolicitudes();
+
+        $search = $_GET['search'] ?? '';
+
+        $where = "";
+
+        if (!empty($search)) {
+            $search = "%$search%";
+            $where = "WHERE 
+        solId LIKE '$search' OR
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE '$search' OR
+        a.ambNom LIKE '$search' OR
+        fichaCod LIKE '$search'";
+        }
+
+        $sql = "
+        SELECT solId,
+            CONCAT_WS(' ', i.usuNoms, i.usuApes) AS instNom,
+            a.ambNom,
+            fecha,
+            horNom,
+            fichaCod,
+            est.estNom
+        FROM solicitud s
+        JOIN horarios h ON s.horIDFk = h.horId
+        JOIN usuarios i ON i.usuCed = s.instIdFk
+        JOIN ambientes a ON a.ambId = s.ambIdFk
+        JOIN estados est ON est.idEst = s.solEst
+        $where
+        WHERE solEst <> 2
+        ORDER BY fechCre DESC
+        ";
+
+        $resultado = obtenerDatos($sql, 5);
+
+        $requests      = $resultado['datos'];
+        $paginaActual  = $resultado['paginaActual'];
+        $totalPaginas  = $resultado['totalPaginas'];
+
+        $data = $requests;
+
+        $columns = [
+            ['label' => 'Código', 'field' => 'solId'],
+            ['label' => 'Instructor', 'field' => 'instNom'],
+            ['label' => 'Ambiente', 'field' => 'ambNom'],
+            ['label' => 'Fecha', 'field' => 'fecha'],
+            ['label' => 'Hora', 'field' => 'horNom'],
+            ['label' => 'Ficha', 'field' => 'fichaCod'],
+            ['label' => 'Estado', 'field' => 'estNom'],
+        ];
+
+        $searchFields = ['solId', 'instNom', 'ambNom', 'fichaCod'];
+
+        $actions = function ($row) {
+            if ($row['estNom'] !== 'Cancelado') {
+                return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                data-id="' . $row['solId'] . '">
+                Cancelar
+                </button>';
+            }
+        };
         ?>
+
 
         <!-- Encabezado -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-gray-800">
-                    Gestión de Solicitudes de Salones
+                    Gestión de Solicitudes de Ambientes
                 </h2>
                 <p class="text-gray-500 mt-1">
                     Administra y supervisa todas las reservas de ambientes académicos.
