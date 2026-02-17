@@ -28,7 +28,7 @@ $menuItems = [
     <div class="p-6">
         <div class="flex items-center space-x-3 bg-blue-800/50 p-3 rounded-xl border border-blue-700/50">
             <div class="bg-white/20 p-2 rounded-lg">
-                🏫
+                <i class="fa-solid fa-house"></i>
             </div>
             <span class="font-bold text-lg tracking-tight">SGA Panel</span>
         </div>

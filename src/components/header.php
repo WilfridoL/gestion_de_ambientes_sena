@@ -22,8 +22,8 @@
     
             <div class="flex items-center space-x-3 cursor-pointer group">
               <div class="hidden sm:block text-right">
-                <p class="text-sm font-semibold leading-none">Admin Usuario</p>
-                <p class="text-xs text-blue-300 leading-tight">Administrador General</p>
+                <p class="text-sm font-semibold leading-none">FRANSISCO HERNANDEZ</p>
+                <p class="text-xs text-blue-300 leading-tight">Administrador</p>
               </div>
               <div class="relative">
                 <img 
