@@ -14,7 +14,7 @@
     <?php include './src/components/header.php'; ?>
 
     <?php
-    $activeTab = '';
+    $activeTab = 'mis-solicitudes';
     include './src/components/sidebar.php';
     ?>
 
@@ -26,14 +26,16 @@
 
         $search = $_GET['search'] ?? '';
 
-        $where = "";
+        $where = "WHERE usuCed = '798999'";
 
         if (!empty($search)) {
             $search = "%$search%";
-            $where = "WHERE 
+            $where .= " AND (
         solId LIKE '$search' OR
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE '$search' OR
         a.ambNom LIKE '$search' OR
-        fichaCod LIKE '$search'";
+        fichaCod LIKE '$search'
+    )";
         }
 
         $sql = "
@@ -49,7 +51,6 @@
         JOIN usuarios i ON i.usuCed = s.instIdFk
         JOIN ambientes a ON a.ambId = s.ambIdFk
         JOIN estados est ON est.idEst = s.solEst
-        WHERE usuCed = '798999'
         $where
         ORDER BY fechCre DESC
         ";
@@ -112,6 +113,12 @@
 
     <?php // include "./src/components/modal.php"; ?>
     <script src="./src/app.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    </script>
 </body>
 
 </html>

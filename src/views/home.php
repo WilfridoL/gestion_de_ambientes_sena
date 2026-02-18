@@ -14,8 +14,9 @@
     <?php include './src/components/header.php'; ?>
 
     <?php 
-    $activeTab = '';
+    $activeTab = 'dashboard';
     include './src/components/sidebar.php'; 
+    date_default_timezone_set('America/Bogota');
     ?>
 
    <main class="pt-20 md:pl-70 h-screen overflow-y-auto p-8 space-y-8">
@@ -43,11 +44,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         <!-- Total Solicitudes -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm">Total Solicitudes</p>
-                    <h3 class="text-3xl font-extrabold text-gray-800 mt-1">128</h3>
+                    <h3 class="text-3xl font-extrabold text-gray-800 mt-1">0</h3>
                 </div>
                 <div class="bg-blue-100 text-blue-600 p-3 rounded-xl">
                     <i class="fa-solid fa-file-lines text-xl"></i>
@@ -56,11 +57,11 @@
         </div>
 
         <!-- Aprobadas -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm">Aprobadas</p>
-                    <h3 class="text-3xl font-extrabold text-green-600 mt-1">86</h3>
+                    <h3 class="text-3xl font-extrabold text-green-600 mt-1">0</h3>
                 </div>
                 <div class="bg-green-100 text-green-600 p-3 rounded-xl">
                     <i class="fa-solid fa-circle-check text-xl"></i>
@@ -69,11 +70,11 @@
         </div>
 
         <!-- Pendientes -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm">Pendientes</p>
-                    <h3 class="text-3xl font-extrabold text-yellow-500 mt-1">24</h3>
+                    <h3 class="text-3xl font-extrabold text-yellow-500 mt-1">0</h3>
                 </div>
                 <div class="bg-yellow-100 text-yellow-500 p-3 rounded-xl">
                     <i class="fa-solid fa-clock text-xl"></i>
@@ -82,11 +83,11 @@
         </div>
 
         <!-- Canceladas -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-sm">Canceladas</p>
-                    <h3 class="text-3xl font-extrabold text-red-500 mt-1">18</h3>
+                    <h3 class="text-3xl font-extrabold text-red-500 mt-1">0</h3>
                 </div>
                 <div class="bg-red-100 text-red-500 p-3 rounded-xl">
                     <i class="fa-solid fa-ban text-xl"></i>
@@ -100,7 +101,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Actividad Reciente -->
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h3 class="text-lg font-bold text-gray-800 mb-4">
                 Actividad Reciente
             </h3>
@@ -153,7 +154,7 @@
         </div>
 
         <!-- Ambientes más usados -->
-        <div class="bg-white rounded-2xl shadow-sm border p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h3 class="text-lg font-bold text-gray-800 mb-4">
                 Ambientes más utilizados
             </h3>
@@ -196,6 +197,13 @@
     </div>
 
 </main>
+
+<script>
+    document.getElementById('menuToggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('-translate-x-full');
+});
+</script>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 // Detectar pestaña activa desde la URL
-$activeTab = $_GET['tab'] ?? 'dashboard';
+// $activeTab = $_GET['tab'] ?? 'dashboard';
 
 $menuItems = [
     'dashboard' => [
@@ -22,7 +22,12 @@ $menuItems = [
 ];
 ?>
 
-<aside class="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-blue-900 text-white hidden md:flex flex-col shadow-2xl">
+<aside id="sidebar"
+class="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] 
+bg-blue-900 text-white 
+transform -translate-x-full md:translate-x-0
+transition-transform duration-300
+md:flex flex-col shadow-2xl">
 
     <!-- Logo -->
     <div class="p-6">

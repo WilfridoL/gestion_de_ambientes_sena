@@ -14,7 +14,7 @@
     <?php include './src/components/header.php'; ?>
 
     <?php
-    $activeTab = '';
+    $activeTab = 'solicitudes';
     include './src/components/sidebar.php';
     ?>
 
@@ -26,15 +26,16 @@
 
         $search = $_GET['search'] ?? '';
 
-        $where = "";
+        $where = "WHERE solEst <> 2";
 
         if (!empty($search)) {
             $search = "%$search%";
-            $where = "WHERE 
+            $where .= " AND (
         solId LIKE '$search' OR
         CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE '$search' OR
         a.ambNom LIKE '$search' OR
-        fichaCod LIKE '$search'";
+        fichaCod LIKE '$search'
+    )";
         }
 
         $sql = "
@@ -51,7 +52,6 @@
         JOIN ambientes a ON a.ambId = s.ambIdFk
         JOIN estados est ON est.idEst = s.solEst
         $where
-        WHERE solEst <> 2
         ORDER BY fechCre DESC
         ";
 
@@ -80,6 +80,10 @@
                 return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
                 data-id="' . $row['solId'] . '">
                 Cancelar
+                </button>
+                <button class="btn-aceptar px-3 py-1 text-xs font-bold text-green-600 hover:bg-green-100 rounded-lg transition"
+                data-id="' . $row['solId'] . '">
+                Aprobar
                 </button>';
             }
         };
@@ -113,6 +117,12 @@
 
     <?php include "./src/components/modal.php"; ?>
     <script src="./src/app.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    </script>
 </body>
 
 </html>

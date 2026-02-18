@@ -66,6 +66,40 @@ document.querySelectorAll('.btn-cancelar')
 
 });
 
+document.querySelectorAll('.btn-aceptar')
+.forEach(btn => {
+
+    btn.addEventListener('click', function() {
+
+        const id = this.dataset.id;
+
+        if (!confirm("¿Seguro que deseas cancelar la solicitud?")) {
+            return;
+        }
+
+        fetch('./src/controllers/aprobar.controller.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${id}`
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // o eliminar fila manualmente
+            } else {
+                alert("Error");
+            }
+
+        });
+
+    });
+
+});
+
 function abrirModal() {
     const modal = document.getElementById('modalSolicitud');
     modal.classList.remove('hidden');

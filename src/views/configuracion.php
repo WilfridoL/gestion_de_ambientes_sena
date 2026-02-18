@@ -13,7 +13,7 @@
 
 <?php include './src/components/header.php'; ?>
 <?php 
-$activeTab = 'config';
+$activeTab = 'configuracion';
 include './src/components/sidebar.php'; 
 ?>
 
@@ -34,7 +34,7 @@ include './src/components/sidebar.php';
 
         <!-- Gestionar Ambientes -->
         <a href="ambientes"
-           class="bg-white p-8 rounded-2xl shadow-sm border hover:shadow-lg transition group">
+           class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition group">
             
             <div class="flex items-center justify-between">
                 <div>
@@ -54,8 +54,8 @@ include './src/components/sidebar.php';
         </a>
 
         <!-- Gestionar Instructores -->
-        <a href="/configuracion/instructores.php"
-           class="bg-white p-8 rounded-2xl shadow-sm border hover:shadow-lg transition group">
+        <a href="instructores"
+           class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition group">
             
             <div class="flex items-center justify-between">
                 <div>
@@ -77,7 +77,12 @@ include './src/components/sidebar.php';
     </div>
 
 </main>
-
+<script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    </script>
 </body>
 
 </html>
