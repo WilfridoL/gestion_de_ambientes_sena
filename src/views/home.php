@@ -39,12 +39,23 @@
     LIMIT 1");
 
     $ambMasUsa = masUsados();
-    function converPorcentaje($cant, $total) {
-        return intval(($cant/$total) * 100);
+    function converPorcentaje($cant, $total)
+    {
+        return intval(($cant / $total) * 100);
     }
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
     ?>
 
     <main class="pt-20 md:pl-70 h-screen overflow-y-auto p-8 space-y-8">
+        <?=
+        require_once __DIR__ . '../../../env.php';
+
+        var_dump($_ENV);
+        echo "<br>";
+        echo getenv("MYSQLHOST");
+        ?>
         <!-- ENCABEZADO -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
