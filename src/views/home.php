@@ -50,6 +50,7 @@
 
     <main class="pt-20 md:pl-70 h-screen overflow-y-auto p-8 space-y-8">
         <?=
+        var_dump(function_exists("parse_ini_file"));
         require_once __DIR__ . '../../../env.php';
 
         var_dump($_ENV);
