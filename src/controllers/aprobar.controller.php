@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($conexion->query($sql)) {
         echo json_encode([
             "success" => true,
-            "message" => "Solicitud cancelada correctamente"
+            "message" => "Solicitud aprobada correctamente"
         ]);
     } else {
         echo json_encode([

@@ -11,7 +11,7 @@ $actions = $actions ?? null;
             type="text"
             name="search"
             value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
-            placeholder="Buscar por código, instructor, ficha o salón..."
+            placeholder="<?= $placeholder ?? "Buscar..." ?>"
             class="bg-transparent border-none focus:ring-0 w-full text-sm py-1 outline-none text-gray-700">
     </div>
 </form>

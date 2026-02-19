@@ -52,6 +52,7 @@ include "./src/models/solicitud.model.php";
     ];
 
     $searchFields = ['ambId', 'ambNom', 'ambCap'];
+    $placeholder = "Buscar por código, ambiente o capacidad...";
 
     $search = $_GET['search'] ?? '';
     $where = "";
@@ -90,7 +91,7 @@ include "./src/models/solicitud.model.php";
     };
     ?>
     <!-- Encabezado -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h2 class="text-3xl font-extrabold text-gray-800">
           Gestión de Ambientes
@@ -101,7 +102,7 @@ include "./src/models/solicitud.model.php";
       </div>
 
       <button onclick="abrirModal()"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">
+        class="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
         <i class="fa-solid fa-plus mr-2"></i>
         Nuevo Ambiente
       </button>

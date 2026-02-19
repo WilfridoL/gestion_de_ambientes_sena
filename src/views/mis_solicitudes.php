@@ -73,10 +73,21 @@
             ['label' => 'Estado', 'field' => 'estNom'],
         ];
 
-        $searchFields = ['solId', 'instNom', 'ambNom', 'fichaCod'];
+        $searchFields = ['solId', 'ambNom', 'fichaCod'];
+        $placeholder = "Buscar por código, ficha o salón...";
 
         $actions = function ($row) {
-            if ($row['estNom'] !== 'Cancelado') {
+            if ($row['estNom'] !== 'Cancelado' && $row['estNom'] !== 'Aprobado') {
+                return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                data-id="' . $row['solId'] . '">
+                Cancelar
+                </button>
+                <button class="btn-aceptar px-3 py-1 text-xs font-bold text-green-600 hover:bg-green-100 rounded-lg transition"
+                data-id="' . $row['solId'] . '">
+                Aprobar
+                </button>';
+            }
+            if ($row['estNom'] === 'Aprobado') {
                 return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
                 data-id="' . $row['solId'] . '">
                 Cancelar
@@ -96,12 +107,12 @@
                     Administra y supervisa el historial de tus reservas de ambientes académicos.
                 </p>
             </div>
-<!-- 
+
             <button onclick="abrirModal()"
                 class="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
                 <span><i class="fa-solid fa-plus"></i></span>
                 <span>Agregar Solicitud</span>
-            </button> -->
+            </button>
         </div>
 
         <!-- Card -->
@@ -111,7 +122,7 @@
 
     </main>
 
-    <?php // include "./src/components/modal.php"; ?>
+    <?php include "./src/components/modal.php"; ?>
     <script src="./src/app.js"></script>
     <script>
         document.getElementById('menuToggle').addEventListener('click', function() {

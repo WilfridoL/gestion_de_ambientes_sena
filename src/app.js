@@ -35,7 +35,7 @@ document.getElementById('regSolicitud').addEventListener('submit', function (e) 
 document.querySelectorAll('.btn-cancelar')
 .forEach(btn => {
 
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', async function() {
 
         const id = this.dataset.id;
 
@@ -43,17 +43,17 @@ document.querySelectorAll('.btn-cancelar')
             return;
         }
 
-        fetch('./src/controllers/cancelar.controller.php', {
+        await fetch('./src/controllers/cancelar.controller.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: `id=${id}`
         })
-        .then(res => res.json())
+        .then(res => res.text())
         .then(data => {
 
-            if (data.success) {
+            if ( data.success) {
                 alert(data.message);
                 location.reload(); // o eliminar fila manualmente
             } else {
@@ -73,7 +73,7 @@ document.querySelectorAll('.btn-aceptar')
 
         const id = this.dataset.id;
 
-        if (!confirm("¿Seguro que deseas cancelar la solicitud?")) {
+        if (!confirm("¿Seguro que deseas aceptar la solicitud?")) {
             return;
         }
 
