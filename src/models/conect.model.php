@@ -8,9 +8,10 @@ function conectar()
     $PASSWORD = $_ENV["DB_PASS"] ?? getenv("MYSQLPASSWORD");
     $DATABASE = $_ENV["DB_NAME"] ?? getenv("MYSQLDATABASE");
     $PORT = $_ENV["DB_PORT"] ?? getenv("MYSQLPORT");
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $conexion = new mysqli($LOCALHOST, $USERNAME, $PASSWORD, $DATABASE, $PORT);
     if ($conexion->connect_error) {
-        die("Error de conexión: " . $conexion->connect_error);
+        throw new Exception("Error de conexión: " . $conexion->connect_error);
     }
     return $conexion;
 }
