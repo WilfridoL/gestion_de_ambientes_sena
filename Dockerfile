@@ -1,14 +1,17 @@
 FROM php:8.2-apache
 
-# Instalar extensiones necesarias para MySQL
+# Evitar warning ServerName
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Instalar extensiones necesarias
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Habilitar mod_rewrite
+# Activar rewrite
 RUN a2enmod rewrite
 
-# Copiar proyecto al contenedor
+# Forzar solo prefork
+RUN a2dismod mpm_event mpm_worker || true
+RUN a2enmod mpm_prefork
+
 WORKDIR /var/www/html
 COPY . .
-
-# Exponer puerto
-EXPOSE 80
