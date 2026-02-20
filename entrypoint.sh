@@ -1,13 +1,15 @@
 #!/bin/bash
+set -e
 
-# Disable conflicting MPMs and enable mpm_prefork
+# Deshabilitar otros MPM por seguridad
 a2dismod mpm_event || true
 a2dismod mpm_worker || true
-a2enmod mpm_prefork || true
 
-# Remove any leftover symlinks to prevent conflicts
-rm -f /etc/apache2/mods-enabled/mpm_event.conf
-rm -f /etc/apache2/mods-enabled/mpm_worker.conf
+# Habilitar solo prefork
+a2enmod mpm_prefork
 
-# Start Apache
-exec apache2 -DFOREGROUND
+# Evitar warning ServerName
+echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Ejecutar entrypoint original
+exec docker-php-entrypoint apache2-foreground
