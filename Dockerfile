@@ -13,5 +13,10 @@ RUN a2enmod rewrite
 RUN a2dismod mpm_event mpm_worker || true
 RUN a2enmod mpm_prefork
 
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["apache2-foreground"]
+
 WORKDIR /var/www/html
 COPY . .
