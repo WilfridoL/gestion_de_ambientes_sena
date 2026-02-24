@@ -31,14 +31,12 @@ include "./src/models/solicitud.model.php";
                 "name"  => "usuCed",
                 "tipo"  => "number",
                 "required" => true
-
             ],
             [
                 "label" => "Nombres",
                 "name"  => "usuNoms",
                 "tipo"  => "text",
                 "required" => true
-
             ],
             [
                 "label" => "Apellidos",
@@ -132,6 +130,7 @@ include "./src/models/solicitud.model.php";
             <?php include './src/components/table.php'; ?>
 
         </div>
+    <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
 
     </main>
     <script src="./src/crudController.js"></script>

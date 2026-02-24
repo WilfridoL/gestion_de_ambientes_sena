@@ -12,7 +12,6 @@
 <body class="bg-gray-100 text-gray-900 overflow-hidden">
 
     <?php include './src/components/header.php'; ?>
-
     <?php
     $activeTab = 'dashboard';
     include './src/components/sidebar.php';

@@ -119,6 +119,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mt-6">
             <?php include './src/components/table.php'; ?>
         </div>
+    <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
 
     </main>
 
