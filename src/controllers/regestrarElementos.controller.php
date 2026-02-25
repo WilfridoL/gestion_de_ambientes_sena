@@ -101,7 +101,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$idValor) {
                 responder(false, "ID no especificado");
             }
+            $sql = "
+            SELECT a.ambId, s.instIdFk  from solicitud s
+            join ambientes a on a.ambId = s.ambIdFk 
+            join usuarios u on u.usuCed = s.instIdFk 
+            where $idCampo = ?
+            ";
+            $stmt = $conexion->prepare($sql);
+            $tipo = detectarTipo($idValor);
 
+            $stmt->bind_param($tipo, $idValor);
+
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+
+            if ($resultado->num_rows > 0) {
+
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Ya esta en uso el registro, no se puede eliminar"
+                ]);
+                exit();
+            }
             $sql = "DELETE FROM $tabla WHERE $idCampo=?";
             $stmt = $conexion->prepare($sql);
 
@@ -159,4 +180,27 @@ function responder($success, $message)
         "message" => $message
     ]);
     exit;
+}
+
+function comprobarEliminar($idCampo, $idvalor)
+{
+    $conexion = conectar();
+
+    $stmt = $conexion->prepare("
+    SELECT * from solicitud
+    where $idCampo = $idvalor
+");
+
+
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($resultado->num_rows > 0) {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "El ambiente ya está ocupado en ese horario."
+        ]);
+        exit();
+    }
 }
