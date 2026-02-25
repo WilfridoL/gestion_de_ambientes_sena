@@ -36,20 +36,25 @@ include "./src/models/solicitud.model.php";
                 "label" => "Nombres",
                 "name"  => "usuNoms",
                 "tipo"  => "text",
-                "required" => true
+                "required" => true,
+                "maxLength" => 40,
+                "pattern" => "[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
             ],
             [
                 "label" => "Apellidos",
                 "name"  => "usuApes",
                 "tipo"  => "text",
-                "required" => true
-
+                "required" => true,
+                "maxLength" => 40,
+                "pattern" => "[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
             ],
             [
                 "label" => "Correo",
                 "name"  => "usuCorr",
                 "tipo"  => "email",
-                "required" => true
+                "required" => true,
+                "maxLength" => 254,
+                "pattern" => "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
             ]
         ]
     ]);
@@ -130,7 +135,7 @@ include "./src/models/solicitud.model.php";
             <?php include './src/components/table.php'; ?>
 
         </div>
-    <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
+        <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
 
     </main>
     <script src="./src/crudController.js"></script>

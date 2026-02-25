@@ -30,13 +30,17 @@ include "./src/models/solicitud.model.php";
         "label" => "Nombre",
         "name"  => "ambNom",
         "tipo"  => "text",
-        "required" => true
+        "required" => true,
+        "maxLength" => 40,
+        "pattern" => "[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
       ],
       [
         "label" => "Capacidad",
         "name"  => "ambCap",
         "tipo"  => "number",
-        "required" => true
+        "required" => true,
+        "maxLength" => 5,
+        "pattern" => "[0-9\s]"
       ]
     ]
   ]);

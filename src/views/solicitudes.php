@@ -55,7 +55,7 @@
         ORDER BY fechCre DESC
         ";
 
-        $resultado = obtenerDatos($sql, 5);
+        $resultado = obtenerDatos($sql, 10);
 
         $requests      = $resultado['datos'];
         $paginaActual  = $resultado['paginaActual'];
