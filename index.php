@@ -19,7 +19,9 @@ if ($request === '') {
 }
 
 switch ($request) {
-
+    case '/log':
+        view('login');
+        break;
     case '/':
     case '/dashboard':
         view('home');
@@ -43,6 +45,14 @@ switch ($request) {
 
     case '/instructores':
         view('instructor');
+        break;
+    case '/logout':
+        session_start();
+        session_unset();
+        session_destroy();
+
+        header("Location: log");
+        exit();
         break;
 
     default:

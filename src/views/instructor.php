@@ -1,3 +1,12 @@
+<?php 
+    session_start();
+    if (
+        !isset($_SESSION["usuario"])
+        || $_SESSION["rol"] != 1){
+        header("location: /" );
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html lang='en'>
 
@@ -55,6 +64,13 @@ include "./src/models/solicitud.model.php";
                 "required" => true,
                 "maxLength" => 254,
                 "pattern" => "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            ],
+            [
+                "label" => "Constraseña",
+                "name"  => "password",
+                "tipo"  => "password",
+                "required" => true,
+                "maxLength" => 20
             ]
         ]
     ]);

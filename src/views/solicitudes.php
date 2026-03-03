@@ -1,3 +1,11 @@
+<?php 
+    session_start();
+    if (!isset($_SESSION["usuario"])){
+        header("location: log" );
+        exit();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang='en'>
 
@@ -78,7 +86,9 @@
 
 
         $actions = function ($row) {
-            if ($row['estNom'] !== 'Cancelado' && $row['estNom'] !== 'Aprobado') {
+            if ($row['estNom'] !== 'Cancelado' 
+            && $row['estNom'] !== 'Aprobado'
+            && $_SESSION["rol"] == 1) {
                 return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
                 data-id="' . $row['solId'] . '">
                 Cancelar
@@ -88,7 +98,7 @@
                 Aprobar
                 </button>';
             }
-            if ($row['estNom'] === 'Aprobado') {
+            if ($row['estNom'] === 'Aprobado' || $row['estNom'] === 'Pendiente') {
                 return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
                 data-id="' . $row['solId'] . '">
                 Cancelar

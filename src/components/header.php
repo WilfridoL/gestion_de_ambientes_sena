@@ -1,3 +1,16 @@
+<?php
+include __DIR__ . '/../models/conect.model.php';
+$conexion = conectar();
+
+$sql = "
+  SELECT a.autNom as rol, CONCAT_WS(' ', u.usuNoms, u.usuApes ) as nombre  FROM usuarios u
+  join auth a on u.usuAuth = a.autId 
+  WHERE usuCed =" . $_SESSION['usuario'];
+
+$resultado = $conexion->query($sql);
+$datos = $resultado->fetch_assoc();
+?>
+
 <header class="fixed top-0 left-0 w-full h-16 bg-blue-900 text-white flex items-center justify-between px-6 shadow-md z-50">
   <div class="flex items-center space-x-4">
     <!-- {/* Mobile Menu Toggle (Visible only on small screens) */} -->
@@ -15,26 +28,32 @@
   </div>
 
   <div class="flex items-center space-x-6">
-    <div class="relative cursor-pointer group">
+    <!-- <div class="relative cursor-pointer group">
       <button class="p-2 hover:bg-blue-800 rounded-full transition-colors relative">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         <span class="absolute top-1.5 right-1.5 w-3 h-3 bg-red-500 border-2 border-blue-900 rounded-full"></span>
       </button>
-    </div>
+    </div> -->
 
-    <div class="flex items-center space-x-3 cursor-pointer group">
-      <div class="hidden sm:block text-right">
-        <p class="text-sm font-semibold leading-none">FRANSISCO HERNANDEZ</p>
-        <p class="text-xs text-blue-300 leading-tight">Administrador</p>
-      </div>
-      <div class="relative">
+    <div class="relative">
+
+      <button id="userMenuBtn" class="flex items-center space-x-3 cursor-pointer group focus:outline-none">
+
+        <div class="hidden sm:block text-right">
+          <p class="text-sm font-semibold leading-none"><?= $datos["nombre"] ?></p>
+          <p class="text-xs text-blue-300 leading-tight"><?= $datos["rol"] ?></p>
+        </div>
+
         <img
           src="https://picsum.photos/seed/admin/100/100"
           alt="Avatar"
           class="w-10 h-10 rounded-full border-2 border-blue-400 group-hover:border-white transition-all duration-200" />
-      </div>
+
+      </button>
+
     </div>
+
   </div>
 </header>

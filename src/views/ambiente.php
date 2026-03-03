@@ -1,3 +1,12 @@
+<?php 
+    session_start();
+    if (
+        !isset($_SESSION["usuario"])
+        || $_SESSION["rol"] != 1){
+        header("location: /" );
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html lang='en'>
 

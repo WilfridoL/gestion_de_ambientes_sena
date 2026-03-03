@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION["usuario"])) {
+    header("location: log");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang='en'>
 
@@ -27,13 +34,13 @@
     $newApr = actividad("
     SELECT ambNom FROM solicitud
     JOIN ambientes ON ambId = ambIdFk
-    WHERE solEst = 1 AND instIdFk = 798999
+    WHERE solEst = 1 AND instIdFk = " . $_SESSION["usuario"] . "
     ORDER BY solUltMod DESC
     LIMIT 1");
     $newCan = actividad("
     SELECT ambNom FROM solicitud
     JOIN ambientes ON ambId = ambIdFk
-    WHERE solEst = 2 AND instIdFk = 798999
+    WHERE solEst = 2 AND instIdFk = " . $_SESSION["usuario"] . "
     ORDER BY solUltMod DESC
     LIMIT 1");
 
@@ -114,7 +121,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Canceladas</p>
-                        <h3 class="text-3xl font-extrabold text-red-500 mt-1"><?= $total[0]["canceladas"] ?></h3>
+                        <?php if (!isset($total[0]["canceladas"])) { ?>
+                            <h3 class="text-3xl font-extrabold text-red-500 mt-1">No hay solicitudes canceladas</h3>
+                        <?php } else { ?>
+                            <h3 class="text-3xl font-extrabold text-red-500 mt-1"><?= $total[0]["canceladas"] ?></h3>
+                        <?php } ?>
                     </div>
                     <div class="bg-red-100 text-red-500 p-3 rounded-xl">
                         <i class="fa-solid fa-ban text-xl"></i>
@@ -157,9 +168,14 @@
                             <p class="text-sm text-gray-800 font-semibold">
                                 Solicitud aprobada
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Reserva del Ambiente <?= $newApr[0]["ambNom"] ?> fue aprobada
-                            </p>
+                            <?php if (!isset($newApr[0]["ambNom"])) { ?>
+                                <p class="text-xs text-gray-500">No hay se te ha aprobado ninguna solicitud</p>
+                            <?php } else { ?>
+                                <p class="text-xs text-gray-500">
+                                    Reserva del Ambiente <?= $newApr[0]["ambNom"] ?> fue aprobada
+                                </p>
+                            <?php } ?>
+
                         </div>
                     </div>
 
@@ -171,9 +187,14 @@
                             <p class="text-sm text-gray-800 font-semibold">
                                 Solicitud cancelada
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Reserva del Ambiente <?= $newCan[0]["ambNom"] ?> fue cancelada
-                            </p>
+                            <?php if (!isset($newCan[0]["ambNom"])) { ?>
+                                <p class="text-xs text-gray-500">No hay solicitudes canceladas</p>
+                            <?php } else { ?>
+                                <p class="text-xs text-gray-500">
+                                    Reserva del Ambiente <?= $newCan[0]["ambNom"] ?> fue cancelada
+                                </p>
+
+                            <?php } ?>
                         </div>
                     </div>
 
