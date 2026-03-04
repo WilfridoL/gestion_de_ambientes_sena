@@ -35,7 +35,7 @@
         </p>
 
         <!-- Botón -->
-        <a href="/SISTEMA%20DE%20GESTION%20DE%20AMBIENTES/"
+        <a href="/"
            class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-medium px-6 py-3 rounded-lg shadow-md transition duration-300">
             Volver al Inicio
         </a>

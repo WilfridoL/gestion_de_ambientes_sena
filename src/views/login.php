@@ -5,12 +5,13 @@
   <meta charset="UTF-8">
   <title>Login | Sistema</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center p-4">
 
   <!-- Contenedor Login -->
-  <div class="md:w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8">
+ <div class="w-full max-w-md sm:max-w-lg md:max-w-xl bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
 
     <!-- Logo / Título -->
     <div class="text-center mb-6">
@@ -33,7 +34,7 @@
           type="text"
           name="userEmail"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+          class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
           placeholder="Ingrese su correo electronico">
       </div>
 
@@ -46,7 +47,7 @@
           type="password"
           name="userPass"
           required
-          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+          class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
           placeholder="Ingrese su contraseña">
       </div>
 

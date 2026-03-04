@@ -84,27 +84,27 @@
         $searchFields = ['solId', 'instNom', 'ambNom', 'fichaCod'];
         $placeholder = "Buscar por código, instructor, ficha o salón...";
 
-
-        $actions = function ($row) {
-            if ($row['estNom'] !== 'Cancelado' 
-            && $row['estNom'] !== 'Aprobado'
-            && $_SESSION["rol"] == 1) {
-                return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
-                data-id="' . $row['solId'] . '">
-                Cancelar
-                </button>
-                <button class="btn-aceptar px-3 py-1 text-xs font-bold text-green-600 hover:bg-green-100 rounded-lg transition"
-                data-id="' . $row['solId'] . '">
-                Aprobar
-                </button>';
-            }
-            if ($row['estNom'] === 'Aprobado' || $row['estNom'] === 'Pendiente') {
-                return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
-                data-id="' . $row['solId'] . '">
-                Cancelar
-                </button>';
-            }
-        };
+        if ($_SESSION["rol"] == 1){
+            $actions = function ($row) {
+                if ($row['estNom'] !== 'Cancelado' 
+                && $row['estNom'] !== 'Aprobado') {
+                    return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                    data-id="' . $row['solId'] . '">
+                    Cancelar
+                    </button>
+                    <button class="btn-aceptar px-3 py-1 text-xs font-bold text-green-600 hover:bg-green-100 rounded-lg transition"
+                    data-id="' . $row['solId'] . '">
+                    Aprobar
+                    </button>';
+                }
+                if ($row['estNom'] === 'Aprobado') {
+                    return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                    data-id="' . $row['solId'] . '">
+                    Cancelar
+                    </button>';
+                }
+            };
+        }
         ?>
 
 
