@@ -10,7 +10,7 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center p-4">
 
   <!-- Contenedor Login -->
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
+  <div class="md:w-full max-w-xl bg-white rounded-2xl shadow-2xl p-8">
 
     <!-- Logo / Título -->
     <div class="text-center mb-6">
@@ -67,52 +67,52 @@
   </div>
   <script>
     document.querySelector('[data-log]')
-  .addEventListener('submit', async function(e) {
-    e.preventDefault();
+      .addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-    const formData = new FormData(this);
+        const formData = new FormData(this);
 
-    await fetch("./src/controllers/log.controller.php", {
-      method: "POST",
-      body: formData,
-    })
-    .then((response) => response.json())
-    .then((data) => {
+        await fetch("./src/controllers/log.controller.php", {
+            method: "POST",
+            body: formData,
+          })
+          .then((response) => response.json())
+          .then((data) => {
 
-      if (data.success) {
-        mostrarAlerta('success', data.message);
+            if (data.success) {
+              mostrarAlerta('success', data.message);
 
-        // redirigir después de 1.5 segundos
-        setTimeout(() => {
-          window.location.href = "dashboard";
-        }, 800);
+              // redirigir después de 1.5 segundos
+              setTimeout(() => {
+                window.location.href = "dashboard";
+              }, 800);
 
-      } else {
-        mostrarAlerta('error', data.message);
-      }
+            } else {
+              mostrarAlerta('error', data.message);
+            }
 
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-});
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
 
-function mostrarAlerta(tipo, mensaje) {
+    function mostrarAlerta(tipo, mensaje) {
 
-  const contenedor = document.getElementById("alert-container");
+      const contenedor = document.getElementById("alert-container");
 
-  contenedor.innerHTML = "";
+      contenedor.innerHTML = "";
 
-  const color = tipo === "success"
-    ? "bg-green-100 text-green-900"
-    : "bg-red-100 text-red-900";
+      const color = tipo === "success" ?
+        "bg-green-100 text-green-900" :
+        "bg-red-100 text-red-900";
 
-  contenedor.innerHTML = `
+      contenedor.innerHTML = `
     <div class="border ${color} p-3 rounded-lg text-sm">
       ${mensaje}
     </div>
   `;
-}
+    }
   </script>
 </body>
 

@@ -41,9 +41,12 @@ function renderModal($config)
                             </label>
 
                             <?php if ($campo['tipo'] === 'select'): ?>
-                                <select name="<?= $campo['name'] ?>"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="">Seleccione</option>
+                                <select 
+                                name="<?= $campo['name'] ?>"
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                    <?php if (!empty($campo['required'])): ?> required <?php endif; ?>
+                                    >
+                                    <option value=""  selected disabled>Seleccionar...</option>
                                     <?php foreach ($campo['options'] as $opt): ?>
                                         <option value="<?= $opt['value'] ?>">
                                             <?= $opt['text'] ?>

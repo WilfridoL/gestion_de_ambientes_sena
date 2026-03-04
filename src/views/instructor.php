@@ -1,11 +1,12 @@
-<?php 
-    session_start();
-    if (
-        !isset($_SESSION["usuario"])
-        || $_SESSION["rol"] != 1){
-        header("location: /" );
-        exit();
-    }
+<?php
+session_start();
+if (
+    !isset($_SESSION["usuario"])
+    || $_SESSION["rol"] != 1
+) {
+    header("location: /");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang='en'>
@@ -64,6 +65,22 @@ include "./src/models/solicitud.model.php";
                 "required" => true,
                 "maxLength" => 254,
                 "pattern" => "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            ],
+            [
+                "label" => "Rol",
+                "name"  => "usuAuth",
+                "tipo"  => "select",
+                "required" => true,
+                "options" => [
+                    [
+                        "value" => 1,
+                        "text" => "Administrador",
+                    ],
+                    [
+                        "value" => 2,
+                        "text" => "Instructor",
+                    ],
+                ]
             ],
             [
                 "label" => "Constraseña",
