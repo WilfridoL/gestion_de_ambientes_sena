@@ -20,8 +20,8 @@ $menuItems = [
 if (
     $_SESSION["rol"] == 1
 ) {
-    $menuItems += ['configuracion' => [
-        'name' => 'Configuración',
+    $menuItems += ['Panel de Administración' => [
+        'name' => 'Panel de Administración',
         'icon' => 'fa-solid fa-gear'
     ]];
 }

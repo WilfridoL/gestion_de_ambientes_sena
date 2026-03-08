@@ -137,21 +137,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
 
-            // ✅ Solo borrar solicitud si la tabla tiene esa relación
-            $tablasConSolicitud = ['ambientes', 'usuarios']; // ajusta según tu BD
+            $conexion->begin_transaction();
 
-            if (in_array($tabla, $tablasConSolicitud)) {
-                $sqlSolicitud = "DELETE FROM solicitud WHERE $idCampo = ?";
-                $stmtSolicitud = $conexion->prepare($sqlSolicitud);
-                $stmtSolicitud->bind_param($tipo, $idValor);
-                $stmtSolicitud->execute();
+            try {
+                $stmt1 = $conexion->prepare("
+                DELETE s FROM solicitud s
+                JOIN ambientes a ON a.ambId = s.ambIdFk
+                JOIN usuarios u ON u.usuCed = s.instIdFk
+                WHERE $idCampo = ?
+                ");
+                $stmt1->bind_param($tipo, $idValor);
+                $stmt1->execute(); // elimina las solicitudes canceladas, no ocurre nada si hay 0 filas
+
+                $stmt2 = $conexion->prepare("DELETE FROM $tabla WHERE $idCampo = ?");
+                $stmt2->bind_param($tipo, $idValor);
+                $stmt2->execute(); // eliminar el registro
+
+                $conexion->commit();
+                $resultado = true;
+            } catch (Exception $e) {
+                $conexion->rollback();
+                responder(false, "Error al eliminar: " . $e->getMessage());
             }
-
-            // ✅ Luego eliminar el registro principal
-            $sql = "DELETE FROM $tabla WHERE $idCampo = ?";
-            $stmt = $conexion->prepare($sql);
-            $stmt->bind_param($tipo, $idValor);
-            $resultado = $stmt->execute();
             break;
 
         case 'obtener':

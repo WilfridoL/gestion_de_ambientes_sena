@@ -35,7 +35,7 @@ switch ($request) {
         view('mis_solicitudes');
         break;
 
-    case '/configuracion':
+    case '/Panel de Administración':
         view('configuracion');
         break;
 

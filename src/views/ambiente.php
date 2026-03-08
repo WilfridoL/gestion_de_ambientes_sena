@@ -104,6 +104,11 @@ include "./src/models/solicitud.model.php";
     };
     ?>
     <!-- Encabezado -->
+    <a href="/Panel de Administración">
+          <button type="button" class="btn-cancelar px-3 py-1 text-sm font-bold text-blue-600 hover:bg-blue-100 rounded-lg transition">
+              <i class="fa-solid fa-arrow-left"></i> Regresar a Panel de Administración
+          </button>
+      </a>
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h2 class="text-3xl font-extrabold text-gray-800">

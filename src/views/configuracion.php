@@ -15,7 +15,7 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <link rel='stylesheet' href='./src/style/output.css'>
-    <title>SGA - Configuracion</title>
+    <title>SGA - Panel de Administración</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'>
 </head>
 
@@ -32,7 +32,7 @@ include './src/components/sidebar.php';
     <!-- Encabezado -->
     <div>
         <h2 class="text-3xl font-extrabold text-gray-800">
-            Configuraciones del Sistema
+            Panel de Administración
         </h2>
         <p class="text-gray-500 mt-1">
             Administra los ambientes e instructores registrados en el sistema.
