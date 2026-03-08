@@ -36,6 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     continue;
                 }
 
+                $value = formatearValor($key, $value);
+
+                if ($key === 'password') {
+                    $value = password_hash($value, PASSWORD_BCRYPT);
+                }
+
                 $campos[] = $key;
                 $valores[] = '?';
                 $tipos .= detectarTipo($value);
@@ -75,6 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     continue;
                 }
 
+                $value = formatearValor($key, $value);
+
+                if ($key === 'password') {
+                    $value = password_hash($value, PASSWORD_BCRYPT);
+                }
+
                 $sets[] = "$key=?";
                 $tipos .= detectarTipo($value);
                 $datos[] = $value;
@@ -106,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             join ambientes a on a.ambId = s.ambIdFk 
             join usuarios u on u.usuCed = s.instIdFk 
             where $idCampo = ?
+            AND (solEst = 0 OR solEst = 1)
             ";
             $stmt = $conexion->prepare($sql);
             $tipo = detectarTipo($idValor);
@@ -123,12 +136,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 exit();
             }
-            $sql = "DELETE FROM $tabla WHERE $idCampo=?";
+
+            // ✅ Solo borrar solicitud si la tabla tiene esa relación
+            $tablasConSolicitud = ['ambientes', 'usuarios']; // ajusta según tu BD
+
+            if (in_array($tabla, $tablasConSolicitud)) {
+                $sqlSolicitud = "DELETE FROM solicitud WHERE $idCampo = ?";
+                $stmtSolicitud = $conexion->prepare($sqlSolicitud);
+                $stmtSolicitud->bind_param($tipo, $idValor);
+                $stmtSolicitud->execute();
+            }
+
+            // ✅ Luego eliminar el registro principal
+            $sql = "DELETE FROM $tabla WHERE $idCampo = ?";
             $stmt = $conexion->prepare($sql);
-
-            $tipo = detectarTipo($idValor);
             $stmt->bind_param($tipo, $idValor);
-
             $resultado = $stmt->execute();
             break;
 
@@ -203,4 +225,20 @@ function comprobarEliminar($idCampo, $idvalor)
         ]);
         exit();
     }
+}
+
+function formatearValor($campo, $valor)
+{
+    // Correo → minúsculas
+    if (stripos($campo, 'corr') !== false || stripos($campo, 'email') !== false) {
+        return strtolower(trim($valor));
+    }
+    if ($campo === 'password') {
+        return $valor;
+    }
+    if (is_numeric($valor)) {
+        return $valor;
+    }
+    // Todo lo demás → MAYÚSCULAS
+    return strtoupper(trim($valor));
 }

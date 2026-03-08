@@ -31,8 +31,9 @@
           Correo
         </label>
         <input
-          type="text"
+          type="email"
           name="userEmail"
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
           required
           class="w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
           placeholder="Ingrese su correo electronico">
@@ -79,7 +80,7 @@
           })
           .then((response) => response.json())
           .then((data) => {
-
+            console.log(data)
             if (data.success) {
               mostrarAlerta('success', data.message);
 
