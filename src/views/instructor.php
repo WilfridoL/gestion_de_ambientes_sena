@@ -122,7 +122,7 @@ include "./src/models/solicitud.model.php";
 
 
 
-        $resultado = obtenerDatos($sql, 5);
+        $resultado = obtenerDatos($sql, 10);
 
         $requests      = $resultado['datos'];
         $paginaActual  = $resultado['paginaActual'];
