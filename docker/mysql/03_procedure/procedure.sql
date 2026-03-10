@@ -1,3 +1,5 @@
+DELIMITER $$
+
 CREATE DEFINER=`root`@`%` PROCEDURE `sistema`.`cancelar_solicitudes_duplicadas`(IN p_solId VARCHAR(5))
 BEGIN
     DECLARE v_ambIdFk INT;
@@ -19,4 +21,6 @@ BEGIN
       AND solEst = 0
       AND solId != p_solId;
 
-END
+END $$
+
+DELIMITER ;

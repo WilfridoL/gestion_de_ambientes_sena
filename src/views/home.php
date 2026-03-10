@@ -112,7 +112,7 @@ $ambMasUsa = $esAdmin ? masUsados() : masUsados($usuarioId);
                         <p class="text-gray-500 text-sm">
                             <?= $esAdmin ? "Total Solicitudes" : "Mis Solicitudes" ?>
                         </p>
-                        <h3 class="text-3xl font-extrabold text-gray-800 mt-1"><?= $total[0]["total"] ?></h3>
+                        <h3 class="text-3xl font-extrabold text-gray-800 mt-1"><?= $total[0]["total"] ?? 0 ?></h3>
                     </div>
                     <div class="bg-blue-100 text-blue-600 p-3 rounded-xl">
                         <i class="fa-solid fa-file-lines text-xl"></i>
@@ -124,7 +124,7 @@ $ambMasUsa = $esAdmin ? masUsados() : masUsados($usuarioId);
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Aprobadas</p>
-                        <h3 class="text-3xl font-extrabold text-green-600 mt-1"><?= $total[0]["aprobadas"] ?></h3>
+                        <h3 class="text-3xl font-extrabold text-green-600 mt-1"><?= $total[0]["aprobadas"] ?? 0 ?></h3>
                     </div>
                     <div class="bg-green-100 text-green-600 p-3 rounded-xl">
                         <i class="fa-solid fa-circle-check text-xl"></i>
@@ -136,7 +136,7 @@ $ambMasUsa = $esAdmin ? masUsados() : masUsados($usuarioId);
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Pendientes</p>
-                        <h3 class="text-3xl font-extrabold text-yellow-500 mt-1"><?= $total[0]["pendientes"] ?></h3>
+                        <h3 class="text-3xl font-extrabold text-yellow-500 mt-1"><?= $total[0]["pendientes"] ?? 0 ?></h3>
                     </div>
                     <div class="bg-yellow-100 text-yellow-500 p-3 rounded-xl">
                         <i class="fa-solid fa-clock text-xl"></i>
