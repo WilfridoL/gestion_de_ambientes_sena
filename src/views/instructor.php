@@ -40,6 +40,7 @@ include "./src/models/solicitud.model.php";
                 "label" => "Cedula",
                 "name"  => "usuCed",
                 "tipo"  => "number",
+                "maxNum" => 9999999999,
                 "required" => true
             ],
             [
@@ -104,25 +105,27 @@ include "./src/models/solicitud.model.php";
         ];
 
         $searchFields = ['usuCed', 'usuNoms', 'usuApes'];
-        $search = $_GET['search'] ?? '';
         $placeholder = "Buscar por cedula, nombres o apellidos...";
+        $search = $_GET['search'] ?? '';
 
-        $where = "";
+        $sql = "SELECT * FROM usuarios";
 
         if (!empty($search)) {
-            $search = "%$search%";
-            $where = "WHERE 
-        usuCed LIKE '$search' OR
-        usuNoms LIKE '$search' OR
-        usuApes LIKE '$search'";
+            $searchParam = "%$search%";
+            $sql .= " WHERE
+        usuCed LIKE ? OR
+        usuNoms LIKE ? OR
+        usuApes LIKE ?";
+
+            $resultado = obtenerDatos(
+                $sql,
+                10,
+                [$searchParam, $searchParam, $searchParam],
+                "sss"
+            );
+        } else {
+            $resultado = obtenerDatos($sql, 10);
         }
-        $sql = "
-        SELECT * FROM usuarios
-        $where";
-
-
-
-        $resultado = obtenerDatos($sql, 10);
 
         $requests      = $resultado['datos'];
         $paginaActual  = $resultado['paginaActual'];
@@ -145,7 +148,7 @@ include "./src/models/solicitud.model.php";
         };
         ?>
         <!-- Encabezado -->
-        
+
         <a href="/Panel de Administración">
             <button type="button" class="btn-cancelar px-3 py-1 text-sm font-bold text-blue-600 hover:bg-blue-100 rounded-lg transition">
                 <i class="fa-solid fa-arrow-left"></i> Regresar a Panel de Administración

@@ -38,6 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $value = formatearValor($key, $value);
 
+                if (stripos($key, 'usuCorr') !== false) {
+                    if (correoExiste($conexion, $tabla, $key, $value, $idCampo, $idValor)) {
+                        responder(false, "El correo ya está registrado");
+                    }
+                }
+
                 if ($key === 'password') {
                     $value = password_hash($value, PASSWORD_BCRYPT);
                 }
@@ -82,6 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $value = formatearValor($key, $value);
+
+                if (stripos($key, 'usuCorr') !== false) {
+                    if (correoExiste($conexion, $tabla, $key, $value, $idCampo, $idValor)) {
+                        responder(false, "El correo ya está registrado");
+                    }
+                }
 
                 if ($key === 'password') {
                     $value = password_hash($value, PASSWORD_BCRYPT);
@@ -248,4 +260,27 @@ function formatearValor($campo, $valor)
     }
     // Todo lo demás → MAYÚSCULAS
     return strtoupper(trim($valor));
+}
+
+function correoExiste($conexion, $tabla, $campoCorrre, $valor, $idCampo = null, $idValor = null)
+{
+    $sql = "SELECT 1 FROM $tabla WHERE $campoCorrre = ?";
+
+    // Al actualizar, excluir el registro actual para que no se bloquee
+    // al guardar el mismo correo sin cambiarlo
+    if ($idCampo && $idValor) {
+        $sql .= " AND $idCampo != ?";
+    }
+
+    $stmt = $conexion->prepare($sql);
+
+    if ($idCampo && $idValor) {
+        $tipos = "ss";
+        $stmt->bind_param($tipos, $valor, $idValor);
+    } else {
+        $stmt->bind_param("s", $valor);
+    }
+
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
 }

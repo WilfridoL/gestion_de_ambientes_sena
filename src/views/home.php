@@ -4,6 +4,9 @@ if (!isset($_SESSION["usuario"])) {
     header("location: log");
     exit();
 }
+
+$esAdmin = $_SESSION["rol"] == 1; // ✅ Ajusta el valor según tu BD
+$usuarioId = $_SESSION["usuario"];
 ?>
 <!DOCTYPE html>
 <html lang='en'>
@@ -23,35 +26,60 @@ if (!isset($_SESSION["usuario"])) {
     $activeTab = 'dashboard';
     include './src/components/sidebar.php';
     date_default_timezone_set('America/Bogota');
-    include  './src/models/dashboardData.model.php';
-    $total = totales();
-    $newSol = actividad("
-    SELECT CONCAT_WS(' ', usuNoms, usuApes) AS inst, ambNom FROM solicitud
-    JOIN usuarios ON usuCed = instIdFk
-    JOIN ambientes ON ambId = ambIdFk
-    ORDER BY fechCre DESC
-    LIMIT 1");
-    $newApr = actividad("
-    SELECT ambNom FROM solicitud
-    JOIN ambientes ON ambId = ambIdFk
-    WHERE solEst = 1 AND instIdFk = " . $_SESSION["usuario"] . "
-    ORDER BY solUltMod DESC
-    LIMIT 1");
-    $newCan = actividad("
-    SELECT ambNom FROM solicitud
-    JOIN ambientes ON ambId = ambIdFk
-    WHERE solEst = 2 AND instIdFk = " . $_SESSION["usuario"] . "
-    ORDER BY solUltMod DESC
-    LIMIT 1");
+    include './src/models/dashboardData.model.php';
 
-    $ambMasUsa = masUsados();
+    $total = $esAdmin ? totales() : totalesPorInstructor($usuarioId);
+
+// Admin - sin filtro
+// Instructor - con prepared statement
+$newSol = $esAdmin
+    ? actividad("
+        SELECT CONCAT_WS(' ', usuNoms, usuApes) AS inst, ambNom 
+        FROM solicitud
+        JOIN usuarios ON usuCed = instIdFk
+        JOIN ambientes ON ambId = ambIdFk
+        ORDER BY fechCre DESC LIMIT 1")
+    : actividad("
+        SELECT CONCAT_WS(' ', usuNoms, usuApes) AS inst, ambNom 
+        FROM solicitud
+        JOIN usuarios ON usuCed = instIdFk
+        JOIN ambientes ON ambId = ambIdFk
+        WHERE instIdFk = ?
+        ORDER BY fechCre DESC LIMIT 1",
+        [$usuarioId], "s");
+
+$newApr = $esAdmin
+    ? actividad("
+        SELECT ambNom FROM solicitud
+        JOIN ambientes ON ambId = ambIdFk
+        WHERE solEst = 1
+        ORDER BY solUltMod DESC LIMIT 1")
+    : actividad("
+        SELECT ambNom FROM solicitud
+        JOIN ambientes ON ambId = ambIdFk
+        WHERE solEst = 1 AND instIdFk = ?
+        ORDER BY solUltMod DESC LIMIT 1",
+        [$usuarioId], "s");
+
+$newCan = $esAdmin
+    ? actividad("
+        SELECT ambNom FROM solicitud
+        JOIN ambientes ON ambId = ambIdFk
+        WHERE solEst = 2
+        ORDER BY solUltMod DESC LIMIT 1")
+    : actividad("
+        SELECT ambNom FROM solicitud
+        JOIN ambientes ON ambId = ambIdFk
+        WHERE solEst = 2 AND instIdFk = ?
+        ORDER BY solUltMod DESC LIMIT 1",
+        [$usuarioId], "s");
+
+$ambMasUsa = $esAdmin ? masUsados() : masUsados($usuarioId);
+
     function converPorcentaje($cant, $total)
     {
-        return intval(($cant / $total) * 100);
+        return $total > 0 ? intval(($cant / $total) * 100) : 0;
     }
-    // ini_set('display_errors', 1);
-    // ini_set('display_startup_errors', 1);
-    // error_reporting(E_ALL);
     ?>
 
     <main class="pt-20 md:pl-70 h-screen overflow-y-auto p-8 space-y-8">
@@ -59,13 +87,14 @@ if (!isset($_SESSION["usuario"])) {
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-gray-800">
-                    Dashboard General
+                    <?= $esAdmin ? "Dashboard General" : "Mi Dashboard" ?>
                 </h2>
                 <p class="text-gray-500 mt-1">
-                    Resumen general del estado de reservas y ambientes académicos.
+                    <?= $esAdmin
+                        ? "Resumen general del estado de reservas y ambientes académicos."
+                        : "Resumen de tus solicitudes y ambientes reservados." ?>
                 </p>
             </div>
-
             <div class="flex items-center gap-3">
                 <div class="bg-white px-4 py-2 rounded-xl shadow-sm border text-sm text-gray-600">
                     <i class="fa-regular fa-calendar mr-2"></i>
@@ -77,11 +106,12 @@ if (!isset($_SESSION["usuario"])) {
         <!-- TARJETAS RESUMEN -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <!-- Total Solicitudes -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">Total Solicitudes</p>
+                        <p class="text-gray-500 text-sm">
+                            <?= $esAdmin ? "Total Solicitudes" : "Mis Solicitudes" ?>
+                        </p>
                         <h3 class="text-3xl font-extrabold text-gray-800 mt-1"><?= $total[0]["total"] ?></h3>
                     </div>
                     <div class="bg-blue-100 text-blue-600 p-3 rounded-xl">
@@ -90,7 +120,6 @@ if (!isset($_SESSION["usuario"])) {
                 </div>
             </div>
 
-            <!-- Aprobadas -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
@@ -103,7 +132,6 @@ if (!isset($_SESSION["usuario"])) {
                 </div>
             </div>
 
-            <!-- Pendientes -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
@@ -116,16 +144,13 @@ if (!isset($_SESSION["usuario"])) {
                 </div>
             </div>
 
-            <!-- Canceladas -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Canceladas</p>
-                        <?php if (!isset($total[0]["canceladas"])) { ?>
-                            <h3 class="text-3xl font-extrabold text-red-500 mt-1">No hay solicitudes canceladas</h3>
-                        <?php } else { ?>
-                            <h3 class="text-3xl font-extrabold text-red-500 mt-1"><?= $total[0]["canceladas"] ?></h3>
-                        <?php } ?>
+                        <h3 class="text-3xl font-extrabold text-red-500 mt-1">
+                            <?= $total[0]["canceladas"] ?? 0 ?>
+                        </h3>
                     </div>
                     <div class="bg-red-100 text-red-500 p-3 rounded-xl">
                         <i class="fa-solid fa-ban text-xl"></i>
@@ -141,22 +166,25 @@ if (!isset($_SESSION["usuario"])) {
             <!-- Actividad Reciente -->
             <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    Actividad Reciente
+                    <?= $esAdmin ? "Actividad Reciente del Sistema" : "Mi Actividad Reciente" ?>
                 </h3>
 
                 <div class="space-y-4">
-
                     <div class="flex items-start gap-4">
                         <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
                             <i class="fa-solid fa-plus"></i>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-800 font-semibold">
-                                Nueva solicitud creada
-                            </p>
-                            <p class="text-xs text-gray-500">
-                                Instructor <?= ucwords(strtolower($newSol[0]["inst"])) ?> reservó el Ambiente <?= $newSol[0]["ambNom"] ?>
-                            </p>
+                            <p class="text-sm text-gray-800 font-semibold">Nueva solicitud creada</p>
+                            <?php if (!isset($newSol[0]["ambNom"])) { ?>
+                                <p class="text-xs text-gray-500">No hay solicitudes registradas</p>
+                            <?php } else { ?>
+                                <p class="text-xs text-gray-500">
+                                    <?= $esAdmin
+                                        ? "Instructor " . ucwords(strtolower($newSol[0]["inst"])) . " reservó el Ambiente " . $newSol[0]["ambNom"]
+                                        : "Reservaste el Ambiente " . $newSol[0]["ambNom"] ?>
+                                </p>
+                            <?php } ?>
                         </div>
                     </div>
 
@@ -165,17 +193,16 @@ if (!isset($_SESSION["usuario"])) {
                             <i class="fa-solid fa-check"></i>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-800 font-semibold">
-                                Solicitud aprobada
-                            </p>
+                            <p class="text-sm text-gray-800 font-semibold">Solicitud aprobada</p>
                             <?php if (!isset($newApr[0]["ambNom"])) { ?>
-                                <p class="text-xs text-gray-500">No hay se te ha aprobado ninguna solicitud</p>
+                                <p class="text-xs text-gray-500">
+                                    <?= $esAdmin ? "No hay solicitudes aprobadas" : "No tienes solicitudes aprobadas" ?>
+                                </p>
                             <?php } else { ?>
                                 <p class="text-xs text-gray-500">
                                     Reserva del Ambiente <?= $newApr[0]["ambNom"] ?> fue aprobada
                                 </p>
                             <?php } ?>
-
                         </div>
                     </div>
 
@@ -184,66 +211,52 @@ if (!isset($_SESSION["usuario"])) {
                             <i class="fa-solid fa-xmark"></i>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-800 font-semibold">
-                                Solicitud cancelada
-                            </p>
+                            <p class="text-sm text-gray-800 font-semibold">Solicitud cancelada</p>
                             <?php if (!isset($newCan[0]["ambNom"])) { ?>
-                                <p class="text-xs text-gray-500">No hay solicitudes canceladas</p>
+                                <p class="text-xs text-gray-500">
+                                    <?= $esAdmin ? "No hay solicitudes canceladas" : "No tienes solicitudes canceladas" ?>
+                                </p>
                             <?php } else { ?>
                                 <p class="text-xs text-gray-500">
                                     Reserva del Ambiente <?= $newCan[0]["ambNom"] ?> fue cancelada
                                 </p>
-
                             <?php } ?>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <!-- Ambientes más usados -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    Ambientes más utilizados
+                    <?= $esAdmin ? "Ambientes más utilizados" : "Mis ambientes más reservados" ?>
                 </h3>
 
                 <div class="space-y-4">
+                    <?php
+                    $colores = ['bg-blue-600', 'bg-green-500', 'bg-yellow-500'];
+                    for ($i = 0; $i < 3; $i++):
+                        if (!isset($ambMasUsa['datos'][$i])) break;
+                        $porcentaje = converPorcentaje($ambMasUsa['datos'][$i]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']);
+                    ?>
+                        <div>
+                            <div class="flex justify-between text-sm">
+                                <span>Ambiente <?= $ambMasUsa['datos'][$i]['ambNom'] ?></span>
+                                <span class="font-semibold"><?= $porcentaje ?>%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                <div class="<?= $colores[$i] ?> h-2 rounded-full" style="width: <?= $porcentaje ?>%"></div>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
 
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span>Ambiente <?= $ambMasUsa['datos'][0]['ambNom'] ?></span>
-                            <span class="font-semibold"><?= converPorcentaje($ambMasUsa['datos'][0]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: <?= converPorcentaje($ambMasUsa['datos'][0]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span>Ambiente <?= $ambMasUsa['datos'][1]['ambNom'] ?></span>
-                            <span class="font-semibold"><?= converPorcentaje($ambMasUsa['datos'][1]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: <?= converPorcentaje($ambMasUsa['datos'][1]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%"></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span>Ambiente <?= $ambMasUsa['datos'][2]['ambNom'] ?></span>
-                            <span class="font-semibold"><?= converPorcentaje($ambMasUsa['datos'][2]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="bg-yellow-500 h-2 rounded-full" style="width: <?= converPorcentaje($ambMasUsa['datos'][2]['total_usados'], $ambMasUsa['totalFilas'][0]['fila']) ?>%"></div>
-                        </div>
-                    </div>
-
+                    <?php if (empty($ambMasUsa['datos'])): ?>
+                        <p class="text-sm text-gray-500">No hay datos disponibles</p>
+                    <?php endif; ?>
                 </div>
             </div>
 
         </div>
-
     </main>
 
     <script>
@@ -254,5 +267,4 @@ if (!isset($_SESSION["usuario"])) {
     </script>
 
 </body>
-
 </html>

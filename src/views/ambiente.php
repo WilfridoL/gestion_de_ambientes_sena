@@ -68,20 +68,25 @@ include "./src/models/solicitud.model.php";
     $placeholder = "Buscar por código, ambiente o capacidad...";
 
     $search = $_GET['search'] ?? '';
-    $where = "";
 
-    if (!empty($search)) {
-      $search = "%$search%";
-      $where = "WHERE 
-        ambId LIKE '$search' OR
-        ambNom LIKE '$search' OR
-        ambCap LIKE '$search'";
-    }
-    $sql = "
-    SELECT * FROM ambientes
-    $where
-    ";
-    $resultado = obtenerDatos($sql, 10);
+    $sql = "SELECT * FROM ambientes";
+
+        if (!empty($search)) {
+            $searchParam = "%$search%";
+            $sql .= " WHERE
+        ambId LIKE ? OR
+        ambNom LIKE ? OR
+        ambCap LIKE ?";
+
+            $resultado = obtenerDatos(
+                $sql,
+                10,
+                [$searchParam, $searchParam, $searchParam],
+                "sss"
+            );
+        } else {
+            $resultado = obtenerDatos($sql, 10);
+        }
 
     $requests      = $resultado['datos'];
     $paginaActual  = $resultado['paginaActual'];

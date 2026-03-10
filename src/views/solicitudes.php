@@ -34,36 +34,41 @@
 
         $search = $_GET['search'] ?? '';
 
-        $where = "WHERE solEst <> 2";
+$sql = "
+    SELECT solId,
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) AS instNom,
+        a.ambNom,
+        fecha,
+        horNom,
+        fichaCod,
+        est.estNom
+    FROM solicitud s
+    JOIN horarios h ON s.horIDFk = h.horId
+    JOIN usuarios i ON i.usuCed = s.instIdFk
+    JOIN ambientes a ON a.ambId = s.ambIdFk
+    JOIN estados est ON est.idEst = s.solEst
+    WHERE solEst <> 2
+";
 
-        if (!empty($search)) {
-            $search = "%$search%";
-            $where .= " AND (
-        solId LIKE '$search' OR
-        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE '$search' OR
-        a.ambNom LIKE '$search' OR
-        fichaCod LIKE '$search'
+if (!empty($search)) {
+    $searchParam = "%$search%";
+    $sql .= " AND (
+        solId LIKE ? OR
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE ? OR
+        a.ambNom LIKE ? OR
+        fichaCod LIKE ?
     )";
-        }
+    $sql .= " ORDER BY fechCre DESC";
 
-        $sql = "
-        SELECT solId,
-            CONCAT_WS(' ', i.usuNoms, i.usuApes) AS instNom,
-            a.ambNom,
-            fecha,
-            horNom,
-            fichaCod,
-            est.estNom
-        FROM solicitud s
-        JOIN horarios h ON s.horIDFk = h.horId
-        JOIN usuarios i ON i.usuCed = s.instIdFk
-        JOIN ambientes a ON a.ambId = s.ambIdFk
-        JOIN estados est ON est.idEst = s.solEst
-        $where
-        ORDER BY fechCre DESC
-        ";
-
-        $resultado = obtenerDatos($sql, 10);
+    // ✅ 4 parámetros tipo string
+    $resultado = obtenerDatos($sql, 10, 
+        [$searchParam, $searchParam, $searchParam, $searchParam], 
+        "ssss"
+    );
+} else {
+    $sql .= " ORDER BY fechCre DESC";
+    $resultado = obtenerDatos($sql, 10);
+}
 
         $requests      = $resultado['datos'];
         $paginaActual  = $resultado['paginaActual'];

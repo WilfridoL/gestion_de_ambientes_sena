@@ -1,39 +1,44 @@
 <?php
 
-function obtenerDatos($sqlBase, $registrosPorPagina = 5)
+function obtenerDatos($sqlBase, $registrosPorPagina = 5, $params = [], $tipos = '')
 {
     require_once __DIR__ . "/conect.model.php";
     $conexion = conectar();
 
-    // Página actual
     $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-
-    if ($paginaActual < 1) {
-        $paginaActual = 1;
-    }
-
+    if ($paginaActual < 1) $paginaActual = 1;
     $offset = ($paginaActual - 1) * $registrosPorPagina;
 
-    // Consulta total
+    // ✅ Total con prepared statement
     $sqlTotal = "SELECT COUNT(*) as total FROM ($sqlBase) as tabla";
-    $resultadoTotal = $conexion->query($sqlTotal);
-    $filaTotal = $resultadoTotal->fetch_assoc();
-    $totalRegistros = $filaTotal['total'];
+    $stmtTotal = $conexion->prepare($sqlTotal);
 
-    $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
-
-    // Consulta paginada
-    $sqlPaginado = $sqlBase . " LIMIT $registrosPorPagina OFFSET $offset";
-    $resultado = $conexion->query($sqlPaginado);
-
-    $datos = [];
-
-    while ($fila = $resultado->fetch_assoc()) {
-        $datos[] = $fila;
+    if (!empty($params)) {
+        $stmtTotal->bind_param($tipos, ...$params);
     }
 
+    $stmtTotal->execute();
+    $totalRegistros = $stmtTotal->get_result()->fetch_assoc()['total'];
+    $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
+
+    // ✅ Consulta paginada con prepared statement
+    $sqlPaginado = $sqlBase . " LIMIT ? OFFSET ?";
+    $stmtDatos = $conexion->prepare($sqlPaginado);
+
+    if (!empty($params)) {
+        // Agregar limit y offset a los parámetros existentes
+        $paramsCompletos = array_merge($params, [$registrosPorPagina, $offset]);
+        $tiposCompletos = $tipos . "ii";
+        $stmtDatos->bind_param($tiposCompletos, ...$paramsCompletos);
+    } else {
+        $stmtDatos->bind_param("ii", $registrosPorPagina, $offset);
+    }
+
+    $stmtDatos->execute();
+    $datos = $stmtDatos->get_result()->fetch_all(MYSQLI_ASSOC);
+
     return [
-        "datos" => $datos,
+        "datos"        => $datos,
         "paginaActual" => $paginaActual,
         "totalPaginas" => $totalPaginas
     ];

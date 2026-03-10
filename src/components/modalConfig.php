@@ -58,6 +58,10 @@ function renderModal($config)
                                 <input type="<?= $campo['tipo'] ?>"
                                     name="<?= $campo['name'] ?>"
                                     maxlength="<?= $campo['maxLength'] ?? 10 ?>"
+                                    <?php if(!empty($campo['maxNum'])): ?> 
+                                        max=<?= $campo['maxNum'] ?> 
+                                        oninput="this.value = Math.min(Math.max(this.value, this.min), this.max)"
+                                    <?php endif; ?> 
                                     <?php if (!empty($campo['pattern'])): ?> pattern=<?= $campo['pattern']?> <?php endif; ?>
                                     class="w-full border border-gray-300 rounded-lg px-3 py-2"
                                     <?php if (!empty($campo['required'])): ?> required <?php endif; ?>>

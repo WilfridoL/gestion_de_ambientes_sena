@@ -1,9 +1,9 @@
-<?php 
-    session_start();
-    if (!isset($_SESSION["usuario"])){
-        header("location: log" );
-        exit();
-    }
+<?php
+session_start();
+if (!isset($_SESSION["usuario"])) {
+    header("location: log");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,36 +34,44 @@
 
         $search = $_GET['search'] ?? '';
 
-        $where = "WHERE usuCed = ". $_SESSION["usuario"];
+        $sql = "
+    SELECT solId,
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) AS instNom,
+        a.ambNom,
+        fecha,
+        horNom,
+        fichaCod,
+        est.estNom
+    FROM solicitud s
+    JOIN horarios h ON s.horIDFk = h.horId
+    JOIN usuarios i ON i.usuCed = s.instIdFk
+    JOIN ambientes a ON a.ambId = s.ambIdFk
+    JOIN estados est ON est.idEst = s.solEst
+    WHERE instIdFk =" . $_SESSION["usuario"];
 
         if (!empty($search)) {
-            $search = "%$search%";
-            $where .= " AND (
-        solId LIKE '$search' OR
-        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE '$search' OR
-        a.ambNom LIKE '$search' OR
-        fichaCod LIKE '$search'
+            $searchParam = "%$search%";
+            $sql .= " AND (
+        solId LIKE ? OR
+        CONCAT_WS(' ', i.usuNoms, i.usuApes) LIKE ? OR
+        a.ambNom LIKE ? OR
+        fichaCod LIKE ?
     )";
+            $sql .= " ORDER BY fechCre DESC";
+
+            // ✅ 4 parámetros tipo string
+            $resultado = obtenerDatos(
+                $sql,
+                10,
+                [$searchParam, $searchParam, $searchParam, $searchParam],
+                "ssss"
+            );
+        } else {
+            $sql .= " ORDER BY fechCre DESC";
+
+            // ✅ Sin parámetros
+            $resultado = obtenerDatos($sql, 10);
         }
-
-        $sql = "
-        SELECT solId,
-            CONCAT_WS(' ', i.usuNoms, i.usuApes) AS instNom,
-            a.ambNom,
-            fecha,
-            horNom,
-            fichaCod,
-            est.estNom
-        FROM solicitud s
-        JOIN horarios h ON s.horIDFk = h.horId
-        JOIN usuarios i ON i.usuCed = s.instIdFk
-        JOIN ambientes a ON a.ambId = s.ambIdFk
-        JOIN estados est ON est.idEst = s.solEst
-        $where
-        ORDER BY fechCre DESC
-        ";
-
-        $resultado = obtenerDatos($sql, 10);
 
         $requests      = $resultado['datos'];
         $paginaActual  = $resultado['paginaActual'];
@@ -85,9 +93,11 @@
         $placeholder = "Buscar por código, ficha o salón...";
 
         $actions = function ($row) {
-            if ($row['estNom'] !== 'Cancelado' 
-            && $row['estNom'] !== 'Aprobado'
-            && $_SESSION["rol"] == 1) {
+            if (
+                $row['estNom'] !== 'Cancelado'
+                && $row['estNom'] !== 'Aprobado'
+                && $_SESSION["rol"] == 1
+            ) {
                 return '<button class="btn-cancelar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
                 data-id="' . $row['solId'] . '">
                 Cancelar
@@ -129,7 +139,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mt-6">
             <?php include './src/components/table.php'; ?>
         </div>
-    <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
+        <div id="alert-container" class="fixed top-5 right-5 w-96 z-50"></div>
 
     </main>
 
