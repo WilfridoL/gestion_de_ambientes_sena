@@ -44,6 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
+                if (stripos($key, 'ambNom') !== false || stripos($key, 'usuCed') !== false) {
+                    if (existe($conexion, $tabla, $key, $value)) {
+                        if($key == 'ambNom')  responder(false, "El ambiente ya existe");
+                        if($key == 'usuCed')  responder(false, "Esa cedula ya existe");  
+                    }
+                }
+
                 if ($key === 'password') {
                     $value = password_hash($value, PASSWORD_BCRYPT);
                 }
@@ -92,6 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (stripos($key, 'usuCorr') !== false) {
                     if (correoExiste($conexion, $tabla, $key, $value, $idCampo, $idValor)) {
                         responder(false, "El correo ya está registrado");
+                    }
+                }
+                if (stripos($key, 'ambNom') !== false || stripos($key, 'usuCed') !== false) {
+                    if (existe($conexion, $tabla, $key, $value)) {
+                        if($key == 'ambNom')  responder(false, "El ambiente ya existe");
+                        if($key == 'usuCed')  responder(false, "Esa cedula ya existe");  
                     }
                 }
 
@@ -281,6 +294,16 @@ function correoExiste($conexion, $tabla, $campoCorrre, $valor, $idCampo = null, 
         $stmt->bind_param("s", $valor);
     }
 
+    $stmt->execute();
+    return $stmt->get_result()->num_rows > 0;
+}
+
+function existe($conexion, $tabla, $campo, $valor)
+{
+    $sql = "SELECT * FROM $tabla WHERE $campo = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("s", $valor);
+            
     $stmt->execute();
     return $stmt->get_result()->num_rows > 0;
 }

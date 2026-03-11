@@ -10,10 +10,6 @@ $menuItems = [
     'solicitudes' => [
         'name' => 'Solicitudes',
         'icon' => 'fa-solid fa-file-lines'
-    ],
-    'mis-solicitudes' => [
-        'name' => 'Mis Solicitudes',
-        'icon' => 'fa-solid fa-user-check'
     ]
 ];
 
@@ -23,6 +19,15 @@ if (
     $menuItems += ['Panel de Administración' => [
         'name' => 'Panel de Administración',
         'icon' => 'fa-solid fa-gear'
+    ]];
+}
+
+if (
+    $_SESSION["rol"] == 2
+) {
+    $menuItems += ['mis-solicitudes' => [
+        'name' => 'Mis Solicitudes',
+        'icon' => 'fa-solid fa-user-check'
     ]];
 }
 ?>

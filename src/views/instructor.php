@@ -157,7 +157,7 @@ include "./src/models/solicitud.model.php";
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-3xl font-extrabold text-gray-800">
-                    Gestión de Instructores
+                    Administración de Instructores
                 </h2>
                 <p class="text-gray-500 mt-1">
                     Administra los instructores disponibles.

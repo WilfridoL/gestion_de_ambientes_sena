@@ -4,6 +4,10 @@ if (!isset($_SESSION["usuario"])) {
     header("location: log");
     exit();
 }
+if ($_SESSION["rol"] != 2) {
+    header("location: /");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>

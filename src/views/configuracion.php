@@ -49,7 +49,7 @@ include './src/components/sidebar.php';
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition">
-                        Gestionar Ambientes
+                        Administrar Ambientes
                     </h3>
                     <p class="text-gray-500 mt-2 text-sm">
                         Registrar, actualizar y eliminar ambientes académicos.
@@ -70,7 +70,7 @@ include './src/components/sidebar.php';
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 group-hover:text-green-600 transition">
-                        Gestionar Instructores
+                        Administrar Instructores
                     </h3>
                     <p class="text-gray-500 mt-2 text-sm">
                         Administrar instructores registrados en el sistema.
