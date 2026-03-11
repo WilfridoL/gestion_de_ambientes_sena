@@ -8,6 +8,7 @@ if ($_SESSION["rol"] != 2) {
     header("location: /");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -26,8 +27,87 @@ if ($_SESSION["rol"] != 2) {
     <?php include './src/components/header.php'; ?>
 
     <?php
+    include './src/models/instructor.model.php';
+    include './src/models/ambiente.model.php';
+    include './src/models/horario.model.php';
+    $instData =  obtenerInstructores() ?? [];
+    $ambData =  obtenerAmbiente() ?? [];
+    $horData =  obtenerHorario() ?? [];
     $activeTab = 'mis-solicitudes';
     include './src/components/sidebar.php';
+    include './src/components/modalConfig.php';
+    function cargar($data, $valueKey, $textKey)
+    {
+        $options = [];
+
+        foreach ($data as $e) {
+            $options[] = [
+                "value" => $e[$valueKey],
+                "text"  => $e[$textKey]
+            ];
+        }
+
+        return $options;
+    }
+    renderModal([
+        "titulo" => "Nueva solicitud",
+        "tabla" => "solicitud",
+        "idCampo" => "solId",
+        "campos" => [
+            [
+                "label" => "id",
+                "tipo"  => "text",
+                "name"  => "solId",
+                "valueDefault" => 'S' . random_int(1000, 10000),
+                "mostrar" => false
+            ],
+            [
+                "label" => "Instructor",
+                "name"  => "instIdFk",
+                "tipo"  => "select",
+                "required" => true,
+                "options" => cargar($instData, "usuCed", "nombre"),
+                "selectDefault" => "Seleccione un instructor..."
+            ],
+            [
+                "label" => "Ficha",
+                "name"  => "fichaCod",
+                "tipo"  => "number",
+                "required" => true,
+                "maxLength" => 9999999999
+            ],
+            [
+                "label" => "Ambiente",
+                "name"  => "ambIdFk",
+                "tipo"  => "select",
+                "required" => true,
+                "options" => cargar($ambData, "ambid", "ambNom"),
+                "selectDefault" => "Seleccione una ambiente..."
+            ],
+            [
+                "label" => "Hora",
+                "name"  => "horIDFk",
+                "tipo"  => "select",
+                "required" => true,
+                "options" => cargar($horData, "horid", "horNom"),
+                "selectDefault" => "Seleccione una hora..."
+            ],
+            [
+                "label" => "Fecha",
+                "name"  => "fecha",
+                "tipo"  => "date",
+                "required" => true
+            ],
+            [
+                "label" => "estado",
+                "name"  => "solEst",
+                "tipo"  => "number",
+                "valueDefault" => 1,
+                "mostrar" => false
+            ]
+        ]
+    ]);
+
     ?>
 
     <!-- Contenido principal -->
@@ -117,6 +197,13 @@ if ($_SESSION["rol"] != 2) {
                 Cancelar
                 </button>';
             }
+            if ($row['estNom'] === 'Cancelado') {
+                return '<button class="btn-reasignar px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition"
+                data-id="' . $row['solId'] . '"
+                 onclick="abrirModal(\'actualizar\', \'' . $row['solId'] . '\')">
+                Reasignar
+                </button>';
+            }
         };
         ?>
 
@@ -147,12 +234,63 @@ if ($_SESSION["rol"] != 2) {
 
     </main>
 
-    <?php include "./src/components/modal.php"; ?>
-    <script src="./src/app.js"></script>
+    <script src="./src/crudController.js"></script>
     <script>
         document.getElementById('menuToggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('-translate-x-full');
+        });
+
+        document.querySelectorAll(".btn-cancelar").forEach((btn) => {
+            btn.addEventListener("click", async function() {
+                const id = this.dataset.id;
+
+                if (!confirm("¿Seguro que deseas cancelar la solicitud?")) {
+                    return;
+                }
+
+                await fetch("./src/controllers/cancelar.controller.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: `id=${id}`,
+                    })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            mostrarAlerta("success", data.message);
+                        } else {
+                            mostrarAlerta("error", data.message);
+                        }
+                    });
+            });
+        });
+
+        document.querySelectorAll(".btn-aceptar").forEach((btn) => {
+            btn.addEventListener("click", function() {
+                const id = this.dataset.id;
+
+                if (!confirm("¿Seguro que deseas aceptar la solicitud?")) {
+                    return;
+                }
+
+                fetch("./src/controllers/aprobar.controller.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: `id=${id}`,
+                    })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.success) {
+                            mostrarAlerta("success", data.message);
+                        } else {
+                            mostrarAlerta("error", data.message);
+                        }
+                    });
+            });
         });
     </script>
 </body>

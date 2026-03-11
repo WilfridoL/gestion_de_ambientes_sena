@@ -36,34 +36,39 @@ function renderModal($config)
                     <?php foreach ($campos as $campo): ?>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-600 mb-1">
+                            <label class="block text-sm font-medium text-gray-600 mb-1 <?php if (isset($campo['mostrar']) && $campo['mostrar'] == false) echo 'hidden'; ?>">
                                 <?= $campo['label'] ?>
                             </label>
 
                             <?php if ($campo['tipo'] === 'select'): ?>
-                                <select 
-                                name="<?= $campo['name'] ?>"
+                                <select
+                                    name="<?= $campo['name'] ?>"
                                     class="w-full border border-gray-300 rounded-lg px-3 py-2"
-                                    <?php if (!empty($campo['required'])): ?> required <?php endif; ?>
-                                    >
-                                    <option value=""  selected disabled>Seleccionar...</option>
+                                    <?php if (!empty($campo['required'])): ?> required <?php endif; ?>>
+                                    <option value="" selected disabled><?= $campo["selectDefault"] ?? "Seleccionar..."; ?></option>
                                     <?php foreach ($campo['options'] as $opt): ?>
                                         <option value="<?= $opt['value'] ?>">
                                             <?= $opt['text'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-
+                            <?php elseif ($campo['tipo'] === 'date'): ?>
+                                <input type="date"
+                                    name="fecha"
+                                    min="<?= date('Y-m-d') ?>"
+                                    required
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <?php else: ?>
                                 <input type="<?= $campo['tipo'] ?>"
                                     name="<?= $campo['name'] ?>"
                                     maxlength="<?= $campo['maxLength'] ?? 10 ?>"
-                                    <?php if(!empty($campo['maxNum'])): ?> 
-                                        max=<?= $campo['maxNum'] ?> 
-                                        oninput="this.value = Math.min(Math.max(this.value, this.min), this.max)"
-                                    <?php endif; ?> 
-                                    <?php if (!empty($campo['pattern'])): ?> pattern=<?= $campo['pattern']?> <?php endif; ?>
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                    <?php if (!empty($campo['maxNum'])): ?>
+                                    max=<?= $campo['maxNum'] ?>
+                                    oninput="this.value = Math.min(Math.max(this.value, this.min), this.max)"
+                                    <?php endif; ?>
+                                    <?php if (!empty($campo['pattern'])): ?> pattern=<?= $campo['pattern'] ?> <?php endif; ?>
+                                    <?php if (!empty($campo['valueDefault'])): ?> value=<?= $campo['valueDefault'] ?> <?php endif; ?>
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 <?php if (isset($campo['mostrar']) && $campo['mostrar'] == false) echo 'hidden'; ?>"
                                     <?php if (!empty($campo['required'])): ?> required <?php endif; ?>>
                             <?php endif; ?>
                         </div>

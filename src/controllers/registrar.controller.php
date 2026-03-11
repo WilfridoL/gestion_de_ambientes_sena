@@ -5,7 +5,8 @@ require_once './../models/conect.model.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $conexion = conectar();
-
+    // $idSol = $_POST["id"];
+    // $accion = $_POST["accion"];
     $instructor = $_POST['instructor'];
     $ambiente   = $_POST['ambiente'];
     $hora       = $_POST['hora'];
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+
     $id = 'S' . random_int(1000, 10000);
     $sql = "INSERT INTO solicitud (instIdFk, ambIdFk, horIDFk, fecha, solEst, solId, fichaCod)
             VALUES ($instructor, $ambiente, $hora, '$fecha', 0, '$id', $ficha)";
@@ -49,4 +51,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "message" => "Error al registrar"
         ]);
     }
+    // switch ($accion) {
+    //     case "registrar":
+    //         break;
+    //     case "actualizar":
+    //         break;
+    //     case "obtener":
+    //         $sql = "SELECT * FROM solicitud WHERE solId=?";
+    //         $stmt = $conexion->prepare($sql);
+
+    //         if (!$stmt) {
+    //             responder(false, $conexion->error);
+    //         }
+
+    //         $stmt->bind_param("i", $idSol);
+    //         $stmt->execute();
+
+    //         $resultado = $stmt->get_result()->fetch_assoc();
+
+    //         echo json_encode([
+    //             "success" => true,
+    //             "data" => $resultado
+    //         ]);
+    //         exit;
+    //         break;
+    // }
 }

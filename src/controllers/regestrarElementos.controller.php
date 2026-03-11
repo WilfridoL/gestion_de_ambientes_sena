@@ -30,6 +30,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipos = '';
             $datos = [];
 
+            if ($tabla === 'solicitud') {
+                $ambiente = $_POST['ambIdFk'] ?? null;
+                $hora     = $_POST['horIDFk'] ?? null;
+                $fecha    = $_POST['fecha'] ?? null;
+
+                if ($ambiente && $hora && $fecha) {
+                    $stmt = $conexion->prepare("
+                        SELECT solId FROM solicitud
+                        WHERE ambIdFk = ?
+                        AND fecha = ?
+                        AND horIDFk = ?
+                        AND solEst = 1
+                    ");
+                    $stmt->bind_param("isi", $ambiente, $fecha, $hora);
+                    $stmt->execute();
+                    $resultado = $stmt->get_result();
+                    $stmt->close();
+
+                    if ($resultado->num_rows > 0) {
+                        responder(false, "El ambiente ya está ocupado en ese horario.");
+                    }
+                }
+            }
+
             foreach ($_POST as $key => $value) {
 
                 if (in_array($key, ['accion', 'tabla', 'idCampo', 'idValor'])) {
@@ -46,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (stripos($key, 'ambNom') !== false || stripos($key, 'usuCed') !== false) {
                     if (existe($conexion, $tabla, $key, $value)) {
-                        if($key == 'ambNom')  responder(false, "El ambiente ya existe");
-                        if($key == 'usuCed')  responder(false, "Esa cedula ya existe");  
+                        if ($key == 'ambNom')  responder(false, "El ambiente ya existe");
+                        if ($key == 'usuCed')  responder(false, "Esa cedula ya existe");
                     }
                 }
 
@@ -87,6 +111,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sets = [];
             $tipos = '';
             $datos = [];
+            // validar solicitud
+            if ($tabla === 'solicitud') {
+                $ambiente = $_POST['ambIdFk'] ?? null;
+                $hora     = $_POST['horIDFk'] ?? null;
+                $fecha    = $_POST['fecha'] ?? null;
+
+                if ($ambiente && $hora && $fecha) {
+                    $stmt = $conexion->prepare("
+                        SELECT solId FROM solicitud
+                        WHERE ambIdFk = ?
+                        AND fecha = ?
+                        AND horIDFk = ?
+                        AND solEst = 1
+                        AND solId != ?
+                    ");
+                    $stmt->bind_param("isis", $ambiente, $fecha, $hora, $idValor);
+                    $stmt->execute();
+                    $resultado = $stmt->get_result();
+                    $stmt->close();
+
+                    if ($resultado->num_rows > 0) {
+                        responder(false, "El ambiente ya está ocupado en ese horario.");
+                    }
+                }
+
+                // cambiar estado por 0 = pendiente
+                $_POST['solEst'] = 0;
+            }
 
             foreach ($_POST as $key => $value) {
 
@@ -101,16 +153,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         responder(false, "El correo ya está registrado");
                     }
                 }
-                if (stripos($key, 'ambNom') !== false || stripos($key, 'usuCed') !== false) {
-                    if (existe($conexion, $tabla, $key, $value)) {
-                        if($key == 'ambNom')  responder(false, "El ambiente ya existe");
-                        if($key == 'usuCed')  responder(false, "Esa cedula ya existe");  
-                    }
-                }
+                // if (stripos($key, 'ambNom') !== false || stripos($key, 'usuCed') !== false) {
+                //     if (existe($conexion, $tabla, $key, $value)) {
+                //         if($key == 'ambNom')  responder(false, "El ambiente ya existe");
+                //         if($key == 'usuCed')  responder(false, "Esa cedula ya existe");  
+                //     }
+                // }
 
                 if ($key === 'password') {
                     $value = password_hash($value, PASSWORD_BCRYPT);
                 }
+
 
                 $sets[] = "$key=?";
                 $tipos .= detectarTipo($value);
@@ -303,7 +356,7 @@ function existe($conexion, $tabla, $campo, $valor)
     $sql = "SELECT * FROM $tabla WHERE $campo = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $valor);
-            
+
     $stmt->execute();
     return $stmt->get_result()->num_rows > 0;
 }

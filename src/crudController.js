@@ -141,3 +141,4 @@ function mostrarAlerta(tipo, mensaje) {
     if (tipo === "success") location.reload();
   }, 2000);
 }
+
